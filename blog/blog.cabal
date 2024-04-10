@@ -25,7 +25,7 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
+      Site
   other-modules:
       Paths_blog
   autogen-modules:
@@ -35,6 +35,15 @@ library
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
       base >=4.7 && <5
+    , containers >=0.6.7
+    , http-types >=0.12.4
+    , lucid >=2.10.0
+    , scotty >=0.12.0
+    , stm >=2.5.1.0
+    , text >=2.0.2
+    , time >=1.12.2
+    , transformers >=0.6.1.0
+    , wai-middleware-static >=0.9.2
   default-language: Haskell2010
 
 executable blog-exe
@@ -49,6 +58,15 @@ executable blog-exe
   build-depends:
       base >=4.7 && <5
     , blog
+    , containers >=0.6.7
+    , http-types >=0.12.4
+    , lucid >=2.10.0
+    , scotty >=0.12.0
+    , stm >=2.5.1.0
+    , text >=2.0.2
+    , time >=1.12.2
+    , transformers >=0.6.1.0
+    , wai-middleware-static >=0.9.2
   default-language: Haskell2010
 
 test-suite blog-test
@@ -64,4 +82,13 @@ test-suite blog-test
   build-depends:
       base >=4.7 && <5
     , blog
+    , containers >=0.6.7
+    , http-types >=0.12.4
+    , lucid >=2.10.0
+    , scotty >=0.12.0
+    , stm >=2.5.1.0
+    , text >=2.0.2
+    , time >=1.12.2
+    , transformers >=0.6.1.0
+    , wai-middleware-static >=0.9.2
   default-language: Haskell2010

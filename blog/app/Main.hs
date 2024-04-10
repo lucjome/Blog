@@ -1,6 +1,6 @@
 module Main (main) where
 
-import Lib
+import Site
 
 main :: IO ()
-main = someFunc
+main = siteMain
