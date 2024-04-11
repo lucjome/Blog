@@ -19,7 +19,7 @@ import Web.Scotty
 import qualified Network.Wai.Middleware.Static as Static
 
 -- Types
-data Post = Post { contentP :: TL.Text, titleP :: TL.Text, pdfP :: FilePath } 
+data Post = Post { contentP :: TL.Text, titleP :: TL.Text, minContentP:: TL.Text } 
 data MyState = MyState { sId :: Int, sPosts :: Posts}
 
 -- Synonyms
@@ -29,24 +29,38 @@ type WebState = STM.TVar MyState
 type Ambig a = H.HtmlT a ()
 
 -- HTML types
-
+homePage :: Posts -> Html
+postCan :: Int -> Post -> Html
 -- HTML definitions
 
 -- TODO: write without do-notation
-
-homePage :: Posts -> Html
+-- TODO: div for about us, links, contact etc at the top 
+-- TODO: display every post as a miniature + "Read more" link attached
 homePage ps = do
     H.doctypehtml_ $ do 
         H.head_ $ do
             H.meta_ [ H.charset_ "utf-8" ]
-            H.title_ (H.toHtml (titleP p))
+            H.title_ (H.toHtml ("Home Page" :: TL.Text))
             H.link_ [ H.rel_ "stylesheet", H.type_ "text/css", H.href_ "/style.css" ]
         H.body_ $ do
             H.div_ [ H.class_ "main" ] $ do
                 H.h1_ [ H.class_ "logo" ] $
-                    H.a_ [ H.href_ "/" ] "luca$hevik"
-                H.toHtml $ do
-                 contentP <$> something -- fixa github!!
+                    H.a_ [ H.href_ "/" ] "lupg - home"
+                fmap H.toHtml TL.concat $ M.elems (
+                    fmap minContentP ps) -- use H.with
+        
+-- every post should look like this
+postCan pid ps = do
+    H.doctypehtml_ $ do 
+        H.head_ $ do
+            H.meta_ [ H.charset_ "utf-8" ]
+            H.title_ (H.toHtml (titleP ps <> " " <> TL.pack (show pid)))
+            H.link_ [ H.rel_ "stylesheet", H.type_ "text/css", H.href_ "/style.css" ]
+        H.body_ $ do
+            H.div_ [ H.class_ "main" ] $ do
+                H.h1_ [ H.class_ "logo" ] $
+                    H.a_ [ H.href_ "/" ] "back to homepage"
+
 
 siteMain :: IO ()
 siteMain = mkRandomIO >>= 
@@ -59,10 +73,14 @@ webApp myState =
     S.get "/" $ liftIO (sPosts <$> STM.readTVarIO myState) >>= \posts ->
         S.html $ H.renderText $ homePage posts
 
--- A random post
+-- take text (blog posts) from another directory into "Posts"
+getPosts :: TL.Text -> Posts
+getPosts = undefined
+
+-- posts as a singular random post
 mkRandomIO :: IO Posts
 mkRandomIO = C.getCurrentTime >>= 
     \time -> pure $ M.singleton 0 $ Post {
-         contentP = "Content"
+         contentP = "This is my actual personal letter"
         ,titleP = "Title" 
-        ,pdfP = "empty"}
+        ,minContentP = "Hi this is a miniature version of my personal letter, I am writing a personal letter..."}
