@@ -1,4 +1,6 @@
 {-# LANGUAGE OverloadedStrings, BlockArguments #-}
+{-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# HLINT ignore "Redundant lambda" #-}
 
 module Site (
     siteMain
@@ -19,7 +21,7 @@ import Web.Scotty
 import qualified Network.Wai.Middleware.Static as Static
 
 -- Types
-data Post = Post { contentP :: TL.Text, titleP :: TL.Text, minContentP:: TL.Text } 
+data Post = Post { contentP :: TL.Text, titleP :: TL.Text, minContentP:: TL.Text, refP :: Html} 
 data MyState = MyState { sId :: Int, sPosts :: Posts}
 
 -- Synonyms
@@ -43,12 +45,17 @@ homePage ps = do
             H.title_ (H.toHtml ("Home Page" :: TL.Text))
             H.link_ [ H.rel_ "stylesheet", H.type_ "text/css", H.href_ "/style.css" ]
         H.body_ $ do
+            H.div_ [ H.class_ "main"] $ do
+                H.h1_ [ H.class_ "logo" ] $
+                    H.a_ [ H.href_ "/" ] "About us"
             H.div_ [ H.class_ "main" ] $ do
                 H.h1_ [ H.class_ "logo" ] $
                     H.a_ [ H.href_ "/" ] "lupg - home"
-                fmap H.toHtml TL.concat $ M.elems (
-                    fmap minContentP ps) -- use H.with
-        
+                H.toHtml <$> TL.concat $ M.elems (minContentP <$> ps)
+                mapM_ refP (M.elems ps)
+            
+
+
 -- every post should look like this
 postCan pid ps = do
     H.doctypehtml_ $ do 
@@ -83,4 +90,6 @@ mkRandomIO = C.getCurrentTime >>=
     \time -> pure $ M.singleton 0 $ Post {
          contentP = "This is my actual personal letter"
         ,titleP = "Title" 
-        ,minContentP = "Hi this is a miniature version of my personal letter, I am writing a personal letter..."}
+        ,minContentP = "Hi this is a miniature version of my personal letter, I am writing a personal letter..."
+        ,refP = H.a_ [ H.href_ "/" ] (H.toHtml ("read more" :: TL.Text))}
+
