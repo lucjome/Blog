@@ -19,6 +19,8 @@ import qualified Data.List (intercalate, drop, take, reverse)
 import Data.String (String)
 import Web.Scotty
 import qualified Network.Wai.Middleware.Static as Static
+import Css
+
 
 -- Types
 data Post = Post { contentP :: TL.Text, titleP :: TL.Text, minContentP:: TL.Text, refP :: Html} 
@@ -44,10 +46,16 @@ homePage ps = do
             H.meta_ [ H.charset_ "utf-8" ]
             H.title_ (H.toHtml ("Home Page" :: TL.Text))
             H.link_ [ H.rel_ "stylesheet", H.type_ "text/css", H.href_ "/style.css" ]
+            H.style_ myCss
         H.body_ $ do
             H.div_ [ H.class_ "main"] $ do
                 H.h1_ [ H.class_ "logo" ] $
-                    H.a_ [ H.href_ "/" ] "About us"
+                    H.a_ [ H.href_ "/about" ] "About me"
+
+            H.div_ [ H.class_ "main"] $ do
+                H.h2_ [ H.class_ "logo"] $
+                    H.a_ [ H.href_ "/contact" ] "Contact"
+
             H.div_ [ H.class_ "main" ] $ do
                 H.h1_ [ H.class_ "logo" ] $
                     H.a_ [ H.href_ "/" ] "lupg - home"
@@ -76,9 +84,14 @@ siteMain = mkRandomIO >>=
 
 
 webApp :: WebState -> S.ScottyM ()
-webApp myState = 
+webApp myState = do
     S.get "/" $ liftIO (sPosts <$> STM.readTVarIO myState) >>= \posts ->
         S.html $ H.renderText $ homePage posts
+
+    S.get "/somepost" $ S.html "Hi, this is the actual post"
+    S.get "/about" $ S.html "I am a blogger so I made a blog"
+    S.get "/contact" $ S.html "My contacts are an email and a phone number, as well as a github"
+
 
 -- take text (blog posts) from another directory into "Posts"
 getPosts :: TL.Text -> Posts
@@ -91,5 +104,5 @@ mkRandomIO = C.getCurrentTime >>=
          contentP = "This is my actual personal letter"
         ,titleP = "Title" 
         ,minContentP = "Hi this is a miniature version of my personal letter, I am writing a personal letter..."
-        ,refP = H.a_ [ H.href_ "/" ] (H.toHtml ("read more" :: TL.Text))}
+        ,refP = H.a_ [ H.href_ "/Just a random post" ] (H.toHtml ("read more" :: TL.Text))}
 

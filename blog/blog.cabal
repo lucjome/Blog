@@ -25,6 +25,7 @@ source-repository head
 
 library
   exposed-modules:
+      Css
       Site
   other-modules:
       Paths_blog
